@@ -1,4 +1,4 @@
-# Cấu trức Node-Base
+# Cấu trúc Node-Base
 
 ## config
 
