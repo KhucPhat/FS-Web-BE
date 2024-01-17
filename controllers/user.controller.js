@@ -1,4 +1,4 @@
-const { hashData } = require("../utils/password.util");
+const { hashData, compareData } = require("../utils/password.util");
 const { userService } = require("../services/services");
 const apiResponse = require("../utils/apiResponse");
 const {
@@ -31,19 +31,12 @@ const register = async (req, res) => {
 
     await userService.create(newUser);
 
-    const cookieToken = await genareteVerifyToken(newUser);
+    const cookieToken = genareteVerifyToken(newUser);
+    console.log(cookieToken);
     res.cookie("temp_data", cookieToken, {
       maxAge: 5 * 60 * 1000,
       httpOnly: true,
     });
-
-    // console.log(
-    //   "sendCookie",
-    //   res.cookie("temp_data", cookieToken, {
-    //     maxAge: 5 * 60 * 1000,
-    //     httpOnly: true,
-    //   })
-    // );
 
     console.log("response", res);
 
@@ -80,9 +73,31 @@ const verifyReister = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {};
+const login = async (req, res) => {
+  let data = { ...req.body };
+  try {
+    const user = await userService.findOneByEmail({ email: data.email });
+
+    if (!user) return apiResponse.notFoundResponse(res, "Email không tồn tại.");
+
+    const passwordIsValid = compareData(user.password, data.password);
+    if (!passwordIsValid)
+      return apiResponse.validationErrorWithData(res, "Mật khẩu không đúng.");
+
+    const accessToken = genareteAccessToken(user._id);
+    const info = await userService.findSelect({ _id: user._id }, "-password");
+
+    return apiResponse.successResponseWithData(res, "Đăng nhập thành công", {
+      accessToken: accessToken,
+      info: info,
+    });
+  } catch (error) {
+    return apiResponse.ErrorResponse(res, err.message);
+  }
+};
 
 module.exports = {
   register,
   verifyReister,
+  login,
 };
