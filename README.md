@@ -1,30 +1,30 @@
 # Cấu trức Node-Base
 
-config
+## config
 
 Chứa các file config khai báo chung
 
-controller
+## controller
 
 Bao gồm các hàm xử lý yêu cầu gửi lên
 
-models
+## models
 
 Khai báo dữ liệu trong cơ sở
 
-middleware
+## middleware
 
 Bao gồm các hàm xử lý trung gian
 
-routes
+## routes
 
 Bao gồm các route định tuyến đối tượng
 
-services
+## services
 
 Bao gồm các hàm xử lý câu truy vấn
 
-utils
+## utils
 
 Chứa các file dùng chung
 
