@@ -16,6 +16,9 @@ const app = express();
 //Tạo và gửi cookie
 app.use(cookieParser());
 
+//parse json body params
+app.use(express.json());
+
 // Ngăn chặn truy cập
 app.use(helmet());
 
