@@ -1,6 +1,13 @@
 const { hashData } = require("../utils/password.util");
 const { userService } = require("../services/services");
 const apiResponse = require("../utils/apiResponse");
+const {
+  genareteAccessToken,
+  genareteVerifyToken,
+  verifyToken,
+} = require("../utils/token.util");
+const config = require("../config/config");
+const { sendEmailUser } = require("../utils/mailer.util");
 
 const register = async (req, res) => {
   const data = { ...req.body };
@@ -24,16 +31,58 @@ const register = async (req, res) => {
 
     await userService.create(newUser);
 
-    return apiResponse.successResponse(res, "Đăng ký thành công");
+    const cookieToken = await genareteVerifyToken(newUser);
+    res.cookie("temp_data", cookieToken, {
+      maxAge: 5 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    // console.log(
+    //   "sendCookie",
+    //   res.cookie("temp_data", cookieToken, {
+    //     maxAge: 5 * 60 * 1000,
+    //     httpOnly: true,
+    //   })
+    // );
+
+    console.log("response", res);
+
+    const toEmail = `${config.APP_URL}/api/v1/user/auth/verify`;
+
+    sendEmailUser(data.email, "Xác thực đăng ký", "../views/sendEmail", {
+      name: data.username,
+      verificationLink: toEmail,
+    });
+
+    return apiResponse.successResponse(
+      res,
+      "Đăng ký thành công.Vui lòng xác thực tài khoản bằng email"
+    );
   } catch (error) {
     return apiResponse.errorResponse(res, error);
   }
 };
 
-const login = async (req, res) => { 
-  
-}
+const verifyReister = async (req, res) => {
+  console.log(req.cookies);
+  const cookieToken = req.cookies.temp_data;
+  const userData = verifyToken(cookieToken, config.VERIFY_TOKEN_SECRET);
+  try {
+    if (!userData) return apiResponse.notFoundResponse(res, "Forbidden");
+    await userService.findOneAndUpdate(
+      { email: userData.email },
+      { verified: true }
+    );
+
+    return apiResponse.successResponse(res, "Xác thực thành công");
+  } catch (error) {
+    return apiResponse.ErrorResponse(res, error.message);
+  }
+};
+
+const login = async (req, res) => {};
 
 module.exports = {
   register,
+  verifyReister,
 };
