@@ -3,7 +3,7 @@ const { userService } = require("../services/services");
 const apiResponse = require("../utils/apiResponse");
 const {
   genareteAccessToken,
-  genareteVerifyToken,
+  generateVerifyToken,
   verifyToken,
 } = require("../utils/token.util");
 const config = require("../config/config");
@@ -31,7 +31,7 @@ const register = async (req, res) => {
 
     await userService.create(newUser);
 
-    const cookieToken = await genareteVerifyToken(newUser);
+    const cookieToken = await generateVerifyToken(newUser);
     res.cookie("temp_data", cookieToken, {
       maxAge: 5 * 60 * 1000,
       httpOnly: true,
@@ -45,7 +45,7 @@ const register = async (req, res) => {
     //   })
     // );
 
-    console.log("response", res);
+    // console.log("response", res);
 
     const toEmail = `${config.APP_URL}/api/v1/user/auth/verify`;
 
@@ -63,14 +63,14 @@ const register = async (req, res) => {
   }
 };
 
-const verifyReister = async (req, res) => {
-  console.log(req.cookies);
+const verifyRegister = async (req, res) => {
   const cookieToken = req.cookies.temp_data;
   const userData = verifyToken(cookieToken, config.VERIFY_TOKEN_SECRET);
+
   try {
     if (!userData) return apiResponse.notFoundResponse(res, "Forbidden");
     await userService.findOneAndUpdate(
-      { email: userData.email },
+      { email: userData.data.email },
       { verified: true }
     );
 
@@ -80,9 +80,9 @@ const verifyReister = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {};
+const login = async (req, res) => { };
 
 module.exports = {
   register,
-  verifyReister,
+  verifyRegister,
 };

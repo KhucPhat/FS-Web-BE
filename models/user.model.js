@@ -32,7 +32,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      default: "",
+      default: "user",
     },
     verified: {
       type: Boolean,
