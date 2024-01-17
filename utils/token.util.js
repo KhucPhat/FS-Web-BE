@@ -16,7 +16,7 @@ exports.genareteAccessToken = (id) => {
   }
 };
 
-exports.genareteVerifyToken = (data) => {
+exports.generateVerifyToken = (data) => {
   try {
     return jwt.sign(
       { data: data },

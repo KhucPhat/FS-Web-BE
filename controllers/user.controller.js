@@ -3,7 +3,7 @@ const { userService } = require("../services/services");
 const apiResponse = require("../utils/apiResponse");
 const {
   genareteAccessToken,
-  genareteVerifyToken,
+  generateVerifyToken,
   verifyToken,
 } = require("../utils/token.util");
 const config = require("../config/config");
@@ -56,14 +56,14 @@ const register = async (req, res) => {
   }
 };
 
-const verifyReister = async (req, res) => {
-  console.log(req.cookies);
+const verifyRegister = async (req, res) => {
   const cookieToken = req.cookies.temp_data;
   const userData = verifyToken(cookieToken, config.VERIFY_TOKEN_SECRET);
+
   try {
     if (!userData) return apiResponse.notFoundResponse(res, "Forbidden");
     await userService.findOneAndUpdate(
-      { email: userData.email },
+      { email: userData.data.email },
       { verified: true }
     );
 
