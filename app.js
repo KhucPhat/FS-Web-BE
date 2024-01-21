@@ -13,12 +13,6 @@ connectDatabase();
 
 const app = express();
 
-//Tạo và gửi cookie
-app.use(cookieParser());
-
-//parse json body params
-app.use(express.json());
-
 // Ngăn chặn truy cập
 app.use(helmet());
 
@@ -26,6 +20,11 @@ app.use(helmet());
 app.use(authLimiter);
 
 app.use(cors());
+
+//Tạo và gửi cookie
+app.use(cookieParser());
+
+//parse json body params
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

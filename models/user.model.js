@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const validator = require("validator");
 
 const userSchema = new Schema(
   {
@@ -8,13 +9,8 @@ const userSchema = new Schema(
       require: [true, "Vui lòng điền đầy đủ tên!"],
       unique: true,
     },
-    phonenumber: {
-      type: String,
-      require: [true, "Vui lòng nhập số điện thoại!"],
-      unique: true,
-    },
     birthday: {
-      type: Date,
+      type: String,
     },
     gender: {
       type: String,
@@ -23,6 +19,12 @@ const userSchema = new Schema(
       type: String,
       require: [true, "Vui lòng nhập email!"],
       unique: true,
+      validate: {
+        validator: function (value) {
+          return validator.isEmail(value);
+        },
+        message: "Email is not valid",
+      },
     },
     password: {
       type: String,
