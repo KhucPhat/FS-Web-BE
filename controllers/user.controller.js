@@ -11,16 +11,7 @@ const { sendEmailUser } = require("../utils/mailer.util");
 
 const register = async (req, res) => {
   const data = { ...req.body };
-  const password = data.password;
-  const encryptPass = hashData(password);
-  const newUser = {
-    username: data.username,
-    phonenumber: data.phonenumber,
-    birthday: data.birthday,
-    gender: data.gender,
-    email: data.email,
-    password: encryptPass,
-  };
+
   try {
     const checkEmailDuplicate = await userService.findOneByEmail({
       email: data.email,
@@ -28,6 +19,17 @@ const register = async (req, res) => {
 
     if (checkEmailDuplicate)
       return apiResponse.notFoundResponse(res, "Email already exists!");
+
+    const password = data.password;
+    const encryptPass = hashData(password);
+    const newUser = {
+      username: data.username,
+      phonenumber: data.phonenumber,
+      birthday: data.birthday,
+      gender: data.gender,
+      email: data.email,
+      password: encryptPass,
+    };
 
     await userService.create(newUser);
 
@@ -118,9 +120,9 @@ const forgetPass = async (req, res) => {
 };
 
 const confirmOtp = async (req, res) => {
+  const otpEmail = req.cookies.otp;
+  const dataOtp = req.body.otp;
   try {
-    const otpEmail = req.cookies.otp;
-    const dataOtp = req.body.otp;
     if (otpEmail !== dataOtp)
       return apiResponse.notFoundResponse(res, "Mã OTP không đúng");
     return apiResponse.successResponse(res, "success");

@@ -9,7 +9,7 @@ router.post(
   validationUser.changePass,
   userController.changePassword
 );
-router.post(
+router.post( 
   "/new-password",
   validationUser.newPass,
   userController.newPassword
