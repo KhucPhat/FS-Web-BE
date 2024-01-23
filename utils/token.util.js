@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 
-exports.genareteAccessToken = (id) => {
+exports.generateAccessToken = (id) => {
   try {
     return jwt.sign(
       {
